@@ -2,7 +2,7 @@
 
 use DI\Bridge\Slim\Bridge;
 use DI\Container;
-use Fbender\Payonelink\Controller\CreateLinkController;
+use Fbender\Payonelink\Controller\LinkController;
 use Fbender\Payonelink\Controller\MainController;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -19,7 +19,9 @@ if ($_ENV['APPLICATION_MODE'] === 'dev') {
 }
 $app->addRoutingMiddleware();
 
-$app->get('/', [MainController::class, 'get']);
-$app->post('/createLink', [CreateLinkController::class, 'post']);
+$app->get('/', [MainController::class, 'home']);
+$app->get('/links/new', [MainController::class, 'createLinkForm']);
+$app->post('/links', [LinkController::class, 'createLink']);
+$app->get('/links', [LinkController::class, 'listLinks']);
 
 $app->run();

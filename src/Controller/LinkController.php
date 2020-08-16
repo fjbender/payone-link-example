@@ -10,7 +10,7 @@ use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
 
-class CreateLinkController {
+class LinkController {
     private Environment $twig;
     private PayoneLinkService $linkService;
 
@@ -22,7 +22,14 @@ class CreateLinkController {
         $this->linkService = $linkService;
     }
 
-    public function post(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function listLinks(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $response->getBody()->write($this->twig->render('ListLinksView.twig'));
+
+        return $response;
+    }
+
+    public function createLink(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $linkServiceResponse = $this->linkService->createLink($request);
 
@@ -31,7 +38,7 @@ class CreateLinkController {
         }
 
         try {
-            $response->getBody()->write($this->twig->render('CreateLinkView.twig', [
+            $response->getBody()->write($this->twig->render('LinkCreatedView.twig', [
                 'response' => json_encode(json_decode($linkServiceResponse->getBody()), JSON_PRETTY_PRINT),
                 'responseCode' => $linkServiceResponse->getStatusCode(),
                 'link' => $link['link'] ? $link['link'] : NULL,

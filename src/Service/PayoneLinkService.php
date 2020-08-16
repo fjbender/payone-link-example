@@ -38,7 +38,7 @@ class PayoneLinkService
             'mode' => $_ENV['PAYONE_MODE'],
             'reference' => uniqid(),
             'amount' => $amount,
-            'currency' => 'EUR',
+            'currency' => $postData['currency'],
             'shoppingCart' => [[
                 'type' => 'goods',
                 'number' => uniqid(),

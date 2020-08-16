@@ -1,38 +1,54 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <title>PAYONE Link Example Application</title>
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-</head>
-<body>
+{{ include('Header.twig') }}
 <div class="container">
     <div class="row">
         <div class="col py-5">
             <h1 class="h2">PAYONE Link Example</h1>
 
             <div>
-                <div class="alert alert-success">
-                    Moin!
-                </div>
+                <form action="/links" method="post">
+                    <div class="form-group">
+                        <h2 class="h3">Customer Info</h2>
+                        <div class="row">
+                            <div class="col">
+                                <label for="firstname">First Name</label>
+                                <input type="text" class="form-control" id="firstname" name="firstname" required />
+                            </div>
+                            <div class="col">
+                                <label for="lastname">Last Name</label>
+                                <input type="text" class="form-control" id="lastname" name="lastname" required />
+                            </div>
+                        </div>
 
-                <p>
-                    Response Code was {{ responseCode }}
-                </p>
+                        <label for="email">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required />
 
-                <p>
-                    Response was:
-                </p>
+                        <label for="country">Country</label>
+                        <select class="form-control" id="country" name="country" required>
+                            <option value="DE" selected>Germany</option>
+                            <option value="AT">Austria</option>
+                            <option value="CH">Switzerland</option>
+                        </select>
 
-                <pre>{{ response }}</pre>
+                        <div class="row">
+                            <div class="col">
+                                <label for="currency">Currency</label>
+                                <select class="form-control" id="currency" name="currency" required>
+                                    <option value="EUR" selected>EUR</option>
+                                    <option value="CHF">CHF</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="amount">Amount</label>
+                                <input type="number" class="form-control" value="100.99" min="1" step="0.01" id="amount" name="amount" required />
+                            </div>
+                        </div>
 
-                {% if link %}
-                <p>
-                    <a href="{{ link }}">Go to link</a>
-                </p>
-                {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
 
             </div>
 
@@ -40,9 +56,4 @@
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-
-</body>
-</html>
+{{ include('Footer.twig') }}

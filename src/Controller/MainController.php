@@ -17,9 +17,16 @@ class MainController
         $this->twig = $twig;
     }
 
-    public function get(ResponseInterface $response): ResponseInterface
+    public function home(ResponseInterface $response): ResponseInterface
     {
-        $response->getBody()->write($this->twig->render('MainView.twig'));
+        $response->getBody()->write($this->twig->render('HomeView.twig'));
+
+        return $response;
+    }
+
+    public function createLinkForm(ResponseInterface $response): ResponseInterface
+    {
+        $response->getBody()->write($this->twig->render('CreateLinkView.twig'));
 
         return $response;
     }
