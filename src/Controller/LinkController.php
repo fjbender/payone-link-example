@@ -1,52 +1,75 @@
 <?php
+
 namespace Fbender\Payonelink\Controller;
 
+use Doctrine\ORM\EntityManager;
+use Fbender\Payonelink\Model\Link;
 use Fbender\Payonelink\Service\PayoneLinkService;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
-use Twig\Loader\FilesystemLoader;
 
-class LinkController {
+class LinkController
+{
     private Environment $twig;
     private PayoneLinkService $linkService;
+    private EntityManager $em;
 
-    public function __construct(PayoneLinkService $linkService)
+    public function __construct(PayoneLinkService $linkService, Environment $twig, EntityManager $em)
     {
-        $loader = new FilesystemLoader(__DIR__ . '/../View/');
-        $this->twig = new Environment($loader);
-
+        $this->twig = $twig;
         $this->linkService = $linkService;
+        $this->em = $em;
     }
 
-    public function listLinks(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function listLinks(Response $response): Response
     {
-        $response->getBody()->write($this->twig->render('ListLinksView.twig'));
+        $linkRepository = $this->em->getRepository(Link::class);
+        $links = $linkRepository->findAll();
+        $response->getBody()->write($this->twig->render('ListLinksView.twig', [
+            'links' => $links,
+        ]));
 
         return $response;
     }
 
-    public function createLink(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getLinksRemote(Response $response): Response
     {
-        $linkServiceResponse = $this->linkService->createLink($request);
+        $linkServiceResponse = $this->linkService->getLinks();
+        $response->getBody()->write($linkServiceResponse->getBody());
+        return $response;
+    }
+
+    public function getLink(Response $response, string $linkId)
+    {
+        $linkRepository = $this->em->getRepository(Link::class);
+        /** @var Link $link */
+        $link = $linkRepository->findOneBy(['linkId' => $linkId]) ?? null;
+
+        if ($link === null) {
+            return $response->withStatus(404);
+        }
+
+        $response->getBody()->write($this->twig->render('SingleLinkView.twig', [
+            'response' => json_encode(json_decode($link->getRawResponse()), JSON_PRETTY_PRINT),
+        ]));
+
+        return $response;
+    }
+
+    public function createLink(Request $request, Response $response, EntityManager $em): Response
+    {
+        $linkServiceResponse = $this->linkService->createLink($request, $em);
 
         if ($linkServiceResponse->getStatusCode() === 201) {
             $link = json_decode($linkServiceResponse->getBody(), true);
         }
 
-        try {
-            $response->getBody()->write($this->twig->render('LinkCreatedView.twig', [
-                'response' => json_encode(json_decode($linkServiceResponse->getBody()), JSON_PRETTY_PRINT),
-                'responseCode' => $linkServiceResponse->getStatusCode(),
-                'link' => $link['link'] ? $link['link'] : NULL,
-            ]));
-        } catch (LoaderError $e) {
-        } catch (RuntimeError $e) {
-        } catch (SyntaxError $e) {
-        }
+        $response->getBody()->write($this->twig->render('LinkCreatedView.twig', [
+            'response' => json_encode(json_decode($linkServiceResponse->getBody()), JSON_PRETTY_PRINT),
+            'responseCode' => $linkServiceResponse->getStatusCode(),
+            'link' => $link['link'] ?? null,
+        ]));
 
         return $response;
     }

@@ -2,6 +2,8 @@
 
 namespace Fbender\Payonelink\Service;
 
+use Doctrine\ORM\EntityManager;
+use Fbender\Payonelink\Model\Link;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
@@ -27,7 +29,33 @@ class PayoneLinkService
         $this->client = $client;
     }
 
-    public function createLink(RequestInterface $slimRequest): ResponseInterface
+    public function getLinks(): ResponseInterface
+    {
+        $request = new Request('GET', $this->buildGetAllLinksUrl(),
+            ['Authorization' => $this->getSignatureForLinkList()]);
+        return $this->client->send($request);
+    }
+
+    private function buildGetAllLinksUrl(): string
+    {
+        // todo: find better way to build URL
+        return 'https://onelink.pay1.de/api/v1/payment-links?' .
+            'merchantId=' . $_ENV['PAYONE_MID'] .
+            '&accountId=' . $_ENV['PAYONE_AID'] .
+            '&portalId=' . $_ENV['PAYONE_PORTAL_ID'] .
+            '&mode=' . $_ENV['PAYONE_MODE'];
+    }
+
+    private function getSignatureForLinkList(): string
+    {
+        return 'payone-hmac-sha265 ' . base64_encode(hash_hmac(
+                'sha256',
+                $_ENV['PAYONE_MID'] . $_ENV['PAYONE_AID'] . $_ENV['PAYONE_PORTAL_ID'] . $_ENV['PAYONE_MODE'],
+                $_ENV['PAYONE_KEY'],
+                true));
+    }
+
+    public function createLink(RequestInterface $slimRequest, EntityManager $em): ResponseInterface
     {
         $postData = (array)$slimRequest->getParsedBody();
         $amount = number_format($postData['amount'], 2, '', '');
@@ -69,16 +97,28 @@ class PayoneLinkService
         $request = new Request('POST',
             'https://onelink.pay1.de/api/v1/payment-links',
             [
-                'Authorization' => $this->getBodySignature($body),
+                'Authorization' => $this->getBodySignatureForLinkCreation($body),
                 'Content-type' => 'application/json'
             ],
             json_encode($body)
         );
 
-        return $this->client->send($request, ['http_errors' => false]);
+        $response = $this->client->send($request, ['http_errors' => false]);
+        $linkResponse = json_decode($response->getBody(), true);
+        $link = new Link();
+        $link->setLinkId($linkResponse['id']);
+        $link->setFirstname($linkResponse['billing']['firstName']);
+        $link->setLastname($linkResponse['billing']['lastName']);
+        $link->setAmount($linkResponse['amount']);
+        $link->setCurrency($linkResponse['currency']);
+        $link->setRawResponse($response->getBody());
+        $em->persist($link);
+        $em->flush();
+
+        return $response;
     }
 
-    private function getBodySignature(array $body): string
+    private function getBodySignatureForLinkCreation(array $body): string
     {
         // See https://docs.payone.com/display/public/PLATFORM/Authorization
         $fieldsToSign = [

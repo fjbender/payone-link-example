@@ -1,4 +1,6 @@
 .idea/
 vendor/
 .env
+data/db.sqlite
+.DS_Store
 

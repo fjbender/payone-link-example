@@ -1,30 +1,27 @@
 <?php
+
 namespace Fbender\Payonelink\Controller;
 
-use Psr\Http\Message\ResponseInterface;
+use Slim\Psr7\Response;
 use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 
 class MainController
 {
     private Environment $twig;
 
-    public function __construct()
+    public function __construct(Environment $twig)
     {
-        // todo: should be possible to get this through DI
-        $loader = new FilesystemLoader(__DIR__ . '/../View/');
-        $twig = new Environment($loader);
         $this->twig = $twig;
     }
 
-    public function home(ResponseInterface $response): ResponseInterface
+    public function home(Response $response): Response
     {
         $response->getBody()->write($this->twig->render('HomeView.twig'));
 
         return $response;
     }
 
-    public function createLinkForm(ResponseInterface $response): ResponseInterface
+    public function createLinkForm(Response $response): Response
     {
         $response->getBody()->write($this->twig->render('CreateLinkView.twig'));
 
