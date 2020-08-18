@@ -43,16 +43,17 @@ class PayoneLinkService
             'merchantId=' . $_ENV['PAYONE_MID'] .
             '&accountId=' . $_ENV['PAYONE_AID'] .
             '&portalId=' . $_ENV['PAYONE_PORTAL_ID'] .
-            '&mode=' . $_ENV['PAYONE_MODE'];
+            '&mode=' . $_ENV['PAYONE_MODE']; // .
+            //'&page=0&limit=25';
     }
 
     private function getSignatureForLinkList(): string
     {
-        return 'payone-hmac-sha265 ' . base64_encode(hash_hmac(
+        return 'payone-hmac-sha256 ' . base64_encode(hash_hmac(
                 'sha256',
                 $_ENV['PAYONE_MID'] . $_ENV['PAYONE_AID'] . $_ENV['PAYONE_PORTAL_ID'] . $_ENV['PAYONE_MODE'],
-                $_ENV['PAYONE_KEY'],
-                true));
+                $_ENV['PAYONE_KEY'], true
+            ));
     }
 
     public function createLink(RequestInterface $slimRequest, EntityManager $em): ResponseInterface
@@ -104,16 +105,7 @@ class PayoneLinkService
         );
 
         $response = $this->client->send($request, ['http_errors' => false]);
-        $linkResponse = json_decode($response->getBody(), true);
-        $link = new Link();
-        $link->setLinkId($linkResponse['id']);
-        $link->setFirstname($linkResponse['billing']['firstName']);
-        $link->setLastname($linkResponse['billing']['lastName']);
-        $link->setAmount($linkResponse['amount']);
-        $link->setCurrency($linkResponse['currency']);
-        $link->setRawResponse($response->getBody());
-        $em->persist($link);
-        $em->flush();
+
 
         return $response;
     }

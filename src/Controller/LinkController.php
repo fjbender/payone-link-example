@@ -35,8 +35,14 @@ class LinkController
 
     public function getLinksRemote(Response $response): Response
     {
-        $linkServiceResponse = $this->linkService->getLinks();
-        $response->getBody()->write($linkServiceResponse->getBody());
+        $linkList = json_decode($this->linkService->getLinks()->getBody(), true);
+        $links = array();
+        foreach ($linkList['content'] as $linkEntry) {
+            $links[] = Link::fromResponse($linkEntry);
+        }
+        $response->getBody()->write($this->twig->render('ListLinksView.twig', [
+            'links' => $links
+        ]));
         return $response;
     }
 
@@ -62,13 +68,16 @@ class LinkController
         $linkServiceResponse = $this->linkService->createLink($request, $em);
 
         if ($linkServiceResponse->getStatusCode() === 201) {
-            $link = json_decode($linkServiceResponse->getBody(), true);
+            $linkResponseBody = json_decode($linkServiceResponse->getBody(), true);
+            $link = Link::fromResponse($linkResponseBody);
+            $em->persist($link);
+            $em->flush();
         }
 
         $response->getBody()->write($this->twig->render('LinkCreatedView.twig', [
             'response' => json_encode(json_decode($linkServiceResponse->getBody()), JSON_PRETTY_PRINT),
             'responseCode' => $linkServiceResponse->getStatusCode(),
-            'link' => $link['link'] ?? null,
+            'link' => $linkResponseBody['link'] ?? null,
         ]));
 
         return $response;

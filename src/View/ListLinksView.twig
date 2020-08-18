@@ -6,7 +6,6 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
                     <th scope="col">ID</th>
                     <th scope="col">Firstname</th>
                     <th scope="col">Lastname</th>
@@ -17,7 +16,6 @@
                 <tbody>
                 {% for link in links %}
                     <tr>
-                        <th scope="row">{{ link.id }}</th>
                         <td><a href="/links/{{ link.linkId }}">{{ link.linkId }}</a></td>
                         <td>{{ link.firstname }}</td>
                         <td>{{ link.lastname }}</td>

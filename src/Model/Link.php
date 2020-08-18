@@ -3,12 +3,13 @@
 namespace Fbender\Payonelink\Model;
 
 use Doctrine\ORM\Mapping as ORM;
+use Spatie\DataTransferObject\DataTransferObject;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="link")
  */
-class Link
+class Link extends DataTransferObject
 {
     /**
      * @ORM\Id
@@ -19,23 +20,39 @@ class Link
     /**
      * @ORM\Column(type="string")
      */
-    protected string $linkId;
+    public string $linkId;
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    protected string $firstname;
+    public string $firstname;
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    protected string $lastname;
+    public string $lastname;
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    public int $amount;
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    protected string $amount;
+    public string $currency;
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string")
      */
-    protected string $currency;
+    public string $rawResponse;
+
+    public static function fromResponse(array $responseBody): self
+    {
+        return new self([
+            'firstname' => $responseBody['billing']['firstName'],
+            'lastname' => $responseBody['billing']['lastName'],
+            'linkId' => $responseBody['id'],
+            'amount' => $responseBody['amount'],
+            'currency' => $responseBody['currency'],
+            'rawResponse' => json_encode($responseBody)
+        ]);
+    }
 
     /**
      * @return string
@@ -102,10 +119,8 @@ class Link
     }
 
     /**
-     * @ORM\Column(type="string")
+     * @return string
      */
-    protected string $rawResponse;
-
     public function getLinkId(): string
     {
         return $this->linkId;
