@@ -2,7 +2,6 @@
 
 namespace Fbender\Payonelink\Service;
 
-use Doctrine\ORM\EntityManager;
 use Fbender\Payonelink\Model\Link;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
@@ -12,20 +11,10 @@ use Psr\Http\Message\ResponseInterface;
 
 class PayoneLinkService
 {
-    private int $mid;
-    private int $aid;
-    private int $portalid;
-    private string $key;
-    private string $mode;
     private Client $client;
 
     public function __construct(Client $client)
     {
-        $this->aid = $_ENV['PAYONE_AID'];
-        $this->mid = $_ENV['PAYONE_MID'];
-        $this->portalid = $_ENV['PAYONE_PORTAL_ID'];
-        $this->key = $_ENV['PAYONE_KEY'];
-        $this->mode = $_ENV['PAYONE_MODE'];
         $this->client = $client;
     }
 
@@ -44,7 +33,7 @@ class PayoneLinkService
             '&accountId=' . $_ENV['PAYONE_AID'] .
             '&portalId=' . $_ENV['PAYONE_PORTAL_ID'] .
             '&mode=' . $_ENV['PAYONE_MODE']; // .
-            //'&page=0&limit=25';
+        //'&page=0&limit=25';
     }
 
     private function getSignatureForLinkList(): string
@@ -56,7 +45,29 @@ class PayoneLinkService
             ));
     }
 
-    public function createLink(RequestInterface $slimRequest, EntityManager $em): ResponseInterface
+    public function getLink(string $linkId): ?Link
+    {
+        $request = new Request('GET', 'https://onelink.pay1.de/api/v1/payment-links/' . $linkId,
+            ['Authorization' => $this->getSignatureForGetLink($linkId)]);
+        $response = $this->client->send($request);
+        if ($response->getStatusCode() !== 200) {
+            return null;
+        }
+        return Link::fromResponse(json_decode($response->getBody(), true));
+
+    }
+
+    private function getSignatureForGetLink(string $linkId): string
+    {
+        return 'payone-hmac-sha256 ' . base64_encode(hash_hmac(
+                'sha256',
+                $linkId,
+                $_ENV['PAYONE_KEY'],
+                true
+            ));
+    }
+
+    public function createLink(RequestInterface $slimRequest): ResponseInterface
     {
         $postData = (array)$slimRequest->getParsedBody();
         $amount = number_format($postData['amount'], 2, '', '');

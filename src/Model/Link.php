@@ -2,45 +2,19 @@
 
 namespace Fbender\Payonelink\Model;
 
-use Doctrine\ORM\Mapping as ORM;
 use Spatie\DataTransferObject\DataTransferObject;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="link")
- */
 class Link extends DataTransferObject
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
     protected int $id;
-    /**
-     * @ORM\Column(type="string")
-     */
     public string $linkId;
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
     public string $firstname;
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
     public string $lastname;
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
     public int $amount;
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
     public string $currency;
-    /**
-     * @ORM\Column(type="string")
-     */
+    public string $link;
     public string $rawResponse;
+    public string $status;
 
     public static function fromResponse(array $responseBody): self
     {
@@ -50,8 +24,15 @@ class Link extends DataTransferObject
             'linkId' => $responseBody['id'],
             'amount' => $responseBody['amount'],
             'currency' => $responseBody['currency'],
+            'link' => $responseBody['link'],
+            'status' => $responseBody['status'],
             'rawResponse' => json_encode($responseBody)
         ]);
+    }
+
+    public function getLink(): string
+    {
+        return $this->link;
     }
 
     /**

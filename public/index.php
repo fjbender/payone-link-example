@@ -17,8 +17,7 @@ $app->addRoutingMiddleware();
 $app->get('/', [MainController::class, 'home']);
 $app->get('/links/new', [MainController::class, 'createLinkForm']);
 $app->post('/links', [LinkController::class, 'createLink']);
-$app->get('/links', [LinkController::class, 'listLinks']);
-$app->get('/remote/links', [LinkController::class, 'getLinksRemote']);
+$app->get('/links', [LinkController::class, 'getLinks']);
 $app->get('/links/{linkId}', [LinkController::class, 'getLink']);
 
 $app->run();
