@@ -17,7 +17,7 @@ class NotificationController
             return $response->withStatus(200);
         }
         echo "Verification failed\n";
-        return $response->withStatus(200); // todo set to 400
+        return $response->withStatus(400);
     }
 
     private function verifyNotificationSignature(Request $request): bool
