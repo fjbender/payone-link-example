@@ -15,6 +15,8 @@ class Link extends DataTransferObject
     public string $link;
     public string $rawResponse;
     public string $status;
+    public ?string $paymentMethod;
+    public ?string $paymentProcess;
 
     public static function fromResponse(array $responseBody): self
     {
@@ -26,6 +28,8 @@ class Link extends DataTransferObject
             'currency' => $responseBody['currency'],
             'link' => $responseBody['link'],
             'status' => $responseBody['status'],
+            'paymentMethod' => $responseBody['paymentMethod'] ?? null,
+            'paymentProcess' => $responseBody['paymentProcess'] ?? null,
             'rawResponse' => json_encode($responseBody)
         ]);
     }

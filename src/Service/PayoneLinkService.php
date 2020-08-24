@@ -104,6 +104,7 @@ class PayoneLinkService
                 'country' => $postData['country'],
             ],
             'email' => $postData['email'],
+            'notifyUrl' => ($_ENV['APPLICATION_BASE_URL'] ?? null) ? $_ENV['APPLICATION_BASE_URL'] . '/notify' : null,
         ];
 
         $request = new Request('POST',

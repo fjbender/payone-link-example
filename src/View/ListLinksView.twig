@@ -11,6 +11,8 @@
                     <th scope="col">Lastname</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Currency</th>
+                    <th scope="col">Payment Method</th>
+                    <th scope="col">TXID</th>
                     <th scope="col">Status</th>
                 </tr>
                 </thead>
@@ -22,7 +24,13 @@
                         <td>{{ link.lastname }}</td>
                         <td>{{ link.amount }}</td>
                         <td>{{ link.currency }}</td>
-                        <td>{{ link.status }}</td>
+                        <td>{{ link.paymentMethod }}</td>
+                        <td>{{ link.paymentProcess }}</td>
+                        <td>
+                            <span class="badge {% if link.status == "executed" %}badge-success{% else %}badge-primary{% endif %}">
+                                {{ link.status }}
+                            </span>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

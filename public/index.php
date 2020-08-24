@@ -3,6 +3,7 @@
 use DI\Bridge\Slim\Bridge;
 use Fbender\Payonelink\Controller\LinkController;
 use Fbender\Payonelink\Controller\MainController;
+use Fbender\Payonelink\Controller\NotificationController;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -19,5 +20,6 @@ $app->get('/links/new', [MainController::class, 'createLinkForm']);
 $app->post('/links', [LinkController::class, 'createLink']);
 $app->get('/links', [LinkController::class, 'getLinks']);
 $app->get('/links/{linkId}', [LinkController::class, 'getLink']);
+$app->post('/notify', [NotificationController::class, 'notifyPost']);
 
 $app->run();
