@@ -33,3 +33,4 @@ There are some things that you might find peculiar:
    * `\Fbender\Payonelink\Service\PayoneLinkService::getSignatureForGetLink` for get single link request signing
    * `\Fbender\Payonelink\Controller\NotificationController::verifyNotificationSignature` for validating the notification signature
 * Pagination in lists: Due to a bug in the PAYONE Link API, pagination is not yet supported
+* This application is not directory-separator-aware and will not run in a Windows environment without modification
