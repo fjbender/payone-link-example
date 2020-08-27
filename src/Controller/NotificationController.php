@@ -8,6 +8,7 @@ use Slim\Psr7\Response;
 
 class NotificationController
 {
+    // Handle notification POST from PAYONE Link API
     public function notifyPost(Request $request, Response $response): Response
     {
         $notify = json_decode($request->getBody(), true);
@@ -16,10 +17,12 @@ class NotificationController
             // Do something with the data here, e.g. save to Order
             return $response->withStatus(200);
         }
-        echo "Verification failed\n";
         return $response->withStatus(400);
     }
 
+    // Verify the signature of a given Notification request
+    // N.B. a previous version of the documentation said something about base64 encoding
+    // parts of the string to sign, which was not true
     private function verifyNotificationSignature(Request $request): bool
     {
         // see https://docs.payone.com/display/public/PLATFORM/How+to+Verify+Notifications

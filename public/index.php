@@ -9,12 +9,14 @@ require __DIR__ . '/../vendor/autoload.php';
 
 require_once __DIR__ . '/../bootstrap.php';
 
+// $container is within bootstrap.php, my IDE still complains about this
 $app = Bridge::create($container);
 if (($_ENV['APPLICATION_MODE'] ?? null)  === 'dev') {
     $app->addErrorMiddleware(true, true, true);
 }
 $app->addRoutingMiddleware();
 
+// All the routes
 $app->get('/', [MainController::class, 'home']);
 $app->get('/links/new', [MainController::class, 'createLinkForm']);
 $app->post('/links', [LinkController::class, 'createLink']);

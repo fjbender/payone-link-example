@@ -21,3 +21,15 @@ user@machine:~$ ngrok http 8080
 ```
 
 and configure `APPLICATION_BASE_URL` in `.env` according to your ngrok host.
+
+## Peculiar things
+
+There are some things that you might find peculiar:
+
+* Templates: As this is the first time I used Twig, the templates don't yet use inheritance. I'll try to learn that an update the project accordingly
+* Authentication/Signatures: The API uses different mechanisms for request signature and authentication, depending on the context. The documentation is somewhat short of examples, so the code in this project might be the most sought after part of this:
+   * `\Fbender\Payonelink\Service\PayoneLinkService::getBodySignatureForLinkCreation` for create link request signing
+   * `\Fbender\Payonelink\Service\PayoneLinkService::getSignatureForLinkList` for get link list request signing
+   * `\Fbender\Payonelink\Service\PayoneLinkService::getSignatureForGetLink` for get single link request signing
+   * `\Fbender\Payonelink\Controller\NotificationController::verifyNotificationSignature` for validating the notification signature
+* Pagination in lists: Due to a bug in the PAYONE Link API, pagination is not yet supported

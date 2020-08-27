@@ -33,6 +33,7 @@ class PayoneLinkService
             '&accountId=' . $_ENV['PAYONE_AID'] .
             '&portalId=' . $_ENV['PAYONE_PORTAL_ID'] .
             '&mode=' . $_ENV['PAYONE_MODE']; // .
+        // todo: currently there is a bug in the API inhibiting pagination
         //'&page=0&limit=25';
     }
 
@@ -67,9 +68,13 @@ class PayoneLinkService
             ));
     }
 
+    // create a link by mapping some of the POST values in the request to a hard-coded JSON object
+    // todo: There is a lot more to this request that can not be configured in the UI yet
     public function createLink(RequestInterface $slimRequest): ResponseInterface
     {
         $postData = (array)$slimRequest->getParsedBody();
+        // The API wants a representation of the amount in the smallest currency unit
+        // todo: use a currency-aware library for this
         $amount = number_format($postData['amount'], 2, '', '');
         $body = [
             'merchantId' => $_ENV['PAYONE_MID'],
@@ -104,6 +109,7 @@ class PayoneLinkService
                 'country' => $postData['country'],
             ],
             'email' => $postData['email'],
+            // only send a notifyUrl if we can build it from APPLICATION_BASE_URL in .env
             'notifyUrl' => ($_ENV['APPLICATION_BASE_URL'] ?? null) ? $_ENV['APPLICATION_BASE_URL'] . '/notify' : null,
         ];
 

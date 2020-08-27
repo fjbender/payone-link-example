@@ -19,6 +19,8 @@ class LinkController
         $this->linkService = $linkService;
     }
 
+    // Get the list of links from the API, build an array of DTOs and pass to template
+    // todo: Support pagination
     public function getLinks(Response $response): Response
     {
         $linkList = json_decode($this->linkService->getLinks()->getBody(), true);
@@ -32,6 +34,7 @@ class LinkController
         return $response;
     }
 
+    // Get a specific link, build a DTO and pass to template
     public function getLink(Response $response, string $linkId): Response
     {
         $link = $this->linkService->getLink($linkId);
@@ -48,6 +51,7 @@ class LinkController
         return $response;
     }
 
+    // Handle POST request to create a specific link
     public function createLink(Request $request, Response $response): Response
     {
         $linkServiceResponse = $this->linkService->createLink($request);
