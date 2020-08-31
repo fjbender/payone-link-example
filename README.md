@@ -1,6 +1,6 @@
 # PAYONE Link Example
 
-This is a example application for the [PAYONE Link](https://docs.payone.com/display/public/PLATFORM/Channel+PAYONE+Link])
+This is a example application for the [PAYONE Link](https://docs.payone.com/display/public/PLATFORM/Channel+PAYONE+Link)
 build with Slim, Guzzle and Twig.
 
 ## Install
