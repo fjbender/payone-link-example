@@ -8,11 +8,11 @@ class Link extends DataTransferObject
 {
     protected int $id;
     public string $linkId;
-    public string $firstname;
+    public ?string $firstname;
     public string $lastname;
     public int $amount;
     public string $currency;
-    public string $link;
+    public ?string $link;
     public string $rawResponse;
     public string $status;
     public ?string $paymentMethod;
@@ -21,12 +21,12 @@ class Link extends DataTransferObject
     public static function fromResponse(array $responseBody): self
     {
         return new self([
-            'firstname' => $responseBody['billing']['firstName'],
+            'firstname' => $responseBody['billing']['firstName'] ?? null,
             'lastname' => $responseBody['billing']['lastName'],
             'linkId' => $responseBody['id'],
             'amount' => $responseBody['amount'],
             'currency' => $responseBody['currency'],
-            'link' => $responseBody['link'],
+            'link' => $responseBody['link'] ?? null, // link can be optional if not enough data is available for execution
             'status' => $responseBody['status'],
             'paymentMethod' => $responseBody['paymentMethod'] ?? null,
             'paymentProcess' => $responseBody['paymentProcess'] ?? null,
