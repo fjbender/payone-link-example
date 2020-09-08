@@ -3,12 +3,13 @@
 This is a example application for the [PAYONE Link](https://docs.payone.com/display/public/PLATFORM/Channel+PAYONE+Link)
 build with Slim, Guzzle and Twig.
 
-## Install
+## Install & Run
 
 * Clone the repository
 * `composer install`
 * Set your PAYONE API Credentials in `.env`
 * Serve, for example with `php -S localhost:8080 -t public/`
+* Or use docker-compose: `docker-compose up` 
 
 ## Usage
 
@@ -33,4 +34,4 @@ There are some things that you might find peculiar:
    * `\Fbender\Payonelink\Service\PayoneLinkService::getSignatureForGetLink` for get single link request signing
    * `\Fbender\Payonelink\Controller\NotificationController::verifyNotificationSignature` for validating the notification signature
 * Pagination in lists: Due to a bug in the PAYONE Link API, pagination is not yet supported
-* This application is not directory-separator-aware and will not run in a Windows environment without modification
+* This application is not directory-separator-aware and will not run in a Windows environment without modification. You should use Docker to run this application from Windows.
